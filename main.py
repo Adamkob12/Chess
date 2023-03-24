@@ -62,6 +62,7 @@ def main():
 
 		if -1 not in new_move:
 			print(new_move)
+			print(board.LegalMoves())
 			#print([p.possible_moves(board.pia, pkgd_info={"Last move": new_move, "WKM": board.white_king_moved, "BKM": board.black_king_moved, "WKR": board.wkr_moved, "WQR": board.wqr_moved, "BKR": board.bkr_moved, "BQR": board.bqr_moved}) for p in board.white_pieces if p.name == "P"])
 			#tmp_p = [p.possible_moves(board.pia, pkgd_info={"Last move": new_move, "WKM": board.white_king_moved, "BKM": board.black_king_moved, "WKR": board.wkr_moved, "WQR": board.wqr_moved, "BKR": board.bkr_moved, "BQR": board.bqr_moved}) for p in board.black_pieces if p.name == "B"]
 			#print([[move_, board.isCheck(board=tmp_board(board.pia, move_),last_move=move_)] for flatten_ in tmp_p for move_ in flatten_])
@@ -92,6 +93,21 @@ def main():
 
 				#print([wpawn.pos for wpawn in board.white_pieces if wpawn.name == "P"])
 				#print([bpawn.pos for bpawn in board.black_pieces if bpawn.name == "P"])
+
+				# Check if game ended
+				if len(board.LegalMoves()) == 0:
+					if board.isCheck():
+						print("~~~~~~~~~~~~~~~~~")
+						print("    CHECKMATE    ")
+						print("~~~~~~~~~~~~~~~~~")
+
+					else:
+						print("~~~~~~~~~~~~~~~~~")
+						print("    STALEMATE    ")
+						print("~~~~~~~~~~~~~~~~~")
+					time.sleep(2)
+					run = False
+
 			else:
 				new_move = [-1,-1]
 				F = False

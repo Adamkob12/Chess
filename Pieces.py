@@ -57,7 +57,7 @@ class Pawn(Piece):
 				pm.append([self.pos, self.pos-8])
 			# capture right
 			if self.pos % 8 != 0:
-				if board[self.pos - 9] < 0:
+				if board[self.pos - 9] > 0:
 					pm.append([self.pos, self.pos-9])
 				else:
 					pm.append([-1, self.pos-9])
@@ -65,7 +65,7 @@ class Pawn(Piece):
 					pm.append([self.pos, self.pos-9])
 			# capture left
 			if self.pos+1 % 8 != 0:
-				if board[self.pos - 7] < 0:
+				if board[self.pos - 7] > 0:
 					pm.append([self.pos, self.pos-7])
 				else:
 					pm.append([-1, self.pos-7])
