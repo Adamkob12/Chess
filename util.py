@@ -158,3 +158,11 @@ def file_rank_pm(index, board, color):
                         pm.append(tmp)
                     break
     return pm
+
+def isPromotion(board):
+	# input: pia
+	# If there is a pawn on the last rank, return its index
+	for i in range(8):
+		if abs(board[i]) == 1: return i
+		if abs(board[63-i]) == 1: return 63-i
+	return -1

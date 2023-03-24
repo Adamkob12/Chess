@@ -56,19 +56,42 @@ def main():
 				x, y = pg.mouse.get_pos()
 				rank_ = int(((WINDOW_SIZE-y) // SQUARE_SIZE))
 				file_ = int((x // SQUARE_SIZE))
-				print(f"rank,{rank_}, file{ file_}")
+				#print(f"rank,{rank_}, file{ file_}")
 				new_move[F] = rank_*8+file_
 				F = True
 
 		if -1 not in new_move:
-			print(board.LegalMoves())
+			print(new_move)
+			#print([p.possible_moves(board.pia, pkgd_info={"Last move": new_move, "WKM": board.white_king_moved, "BKM": board.black_king_moved, "WKR": board.wkr_moved, "WQR": board.wqr_moved, "BKR": board.bkr_moved, "BQR": board.bqr_moved}) for p in board.white_pieces if p.name == "P"])
+			#tmp_p = [p.possible_moves(board.pia, pkgd_info={"Last move": new_move, "WKM": board.white_king_moved, "BKM": board.black_king_moved, "WKR": board.wkr_moved, "WQR": board.wqr_moved, "BKR": board.bkr_moved, "BQR": board.bqr_moved}) for p in board.black_pieces if p.name == "B"]
+			#print([[move_, board.isCheck(board=tmp_board(board.pia, move_),last_move=move_)] for flatten_ in tmp_p for move_ in flatten_])
 			if new_move in board.LegalMoves():
 				board.update_board(move=new_move)
-				print(new_move)
 				board.turn = not board.turn
-				print(board.isCheck())
+				board.last_move = new_move
 				F = False
 				new_move = [-1,-1]
+
+				i = isPromotion(board.pia)
+				if i != -1:
+					tmp_queen = Queen(pos=i , color=(i>10) , name="Q")
+					if i>10:
+						for piece_to_promote in board.white_pieces:
+							if piece_to_promote.pos == i:
+								piece_to_promote.terminate()
+								board.white_pieces.remove(piece_to_promote)
+						board.white_pieces.append(tmp_queen)
+						board.pia[i] = 9
+					else:
+						for piece_to_promote in board.black_pieces:
+							if piece_to_promote.pos == i:
+								piece_to_promote.terminate()
+								board.black_pieces.remove(piece_to_promote)
+						board.black_pieces.append(tmp_queen)
+						board.pia[i] = -9
+
+				#print([wpawn.pos for wpawn in board.white_pieces if wpawn.name == "P"])
+				#print([bpawn.pos for bpawn in board.black_pieces if bpawn.name == "P"])
 			else:
 				new_move = [-1,-1]
 				F = False
