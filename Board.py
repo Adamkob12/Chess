@@ -73,6 +73,9 @@ class Board():
 	def toFEN(self):
 		pass
 
+	def fromFEN(self):
+		pass
+
 	def update_board(self, move):
 		# Assuming move is legal.
 		for index, piece in enumerate(self.black_pieces+self.white_pieces):
@@ -118,7 +121,6 @@ class Board():
 						self.white_king_moved = True
 						if distance(move[0], move[1]) == 2:
 							if self.white_king_pos == 6:
-								print(1)
 								self.update_board([7,5])
 							elif self.white_king_pos == 2:
 								self.update_board([0,3])
@@ -149,21 +151,37 @@ class Board():
 			if distance(move[0], move[1]) == 2:
 				if self.isCheck() or self.isCheck(board=tmp_board(self.pia, [[move[0], move[1] + NOOOOvanish] for NOOOOvanish in [-1,1] if distance(move[0], move[1] + NOOOOvanish) == 1][0])):
 					return False
-		return not (self.isCheck(board=tmp_board(self.pia, move),last_move=move)==((not self.turn)-0.5)*2)
+		return not (self.isCheck(board=tmp_board(self.pia, move),last_move=move)==((not self.turn)-0.5)*2 or self.isCheck(board=tmp_board(self.pia, move),last_move=move)==30)
 
 	def isCheck(self, board=None, last_move=None):
 		if board is None:
 			board = self.pia
 		if last_move is None:
 			last_move = self.last_move
+		White_Check = False
+
+		for place, king in enumerate(board):
+			if king == 100:
+				white_king = place
+			elif king == -100:
+				black_king = place
+
 		# We want to check if the white pieces are checking black
 		for w_piece in self.white_pieces:
 			for move in w_piece.possible_moves(board, pkgd_info={"Last move": last_move, "WKM": self.white_king_moved, "BKM": self.black_king_moved, "WKR": self.wkr_moved, "WQR": self.wqr_moved, "BKR": self.bkr_moved, "BQR": self.bqr_moved}):
 				if board[move[1]] == -100:
-					return 1
+					White_Check = True
+					break
+			if White_Check:
+				break
 		# checking if the black pieces are checking white
 		for b_piece in self.black_pieces:
 			for move in b_piece.possible_moves(board, pkgd_info={"Last move": last_move, "WKM": self.white_king_moved, "BKM": self.black_king_moved, "WKR": self.wkr_moved, "WQR": self.wqr_moved, "BKR": self.bkr_moved, "BQR": self.bqr_moved}):
 				if board[move[1]] == 100:
-					return -1
+					if White_Check:
+						return 30
+					else:
+						return -1
+		if White_Check:
+			return 1
 		return 0

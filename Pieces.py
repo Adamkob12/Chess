@@ -29,11 +29,23 @@ class Pawn(Piece):
 				pm.append([self.pos, self.pos+16])
 			# normal one-move ahead
 			if board[self.pos+8]==0:
-				pm.append([self.pos, self.pos+8])
+				if r(self.pos+8)==8:
+					pm.append([self.pos, self.pos+8, 'r'])
+					pm.append([self.pos, self.pos+8, 'q'])
+					pm.append([self.pos, self.pos+8, 'b'])
+					pm.append([self.pos, self.pos+8, 'n'])
+				else:
+					pm.append([self.pos, self.pos+8])
 			# capture right
-			if self.pos+1 % 8 != 0:
+			if (self.pos+1) % 8 != 0:
 				if board[self.pos + 9] < 0:
-					pm.append([self.pos, self.pos+9])
+					if r(self.pos+9)==8:
+						pm.append([self.pos, self.pos+9, 'r'])
+						pm.append([self.pos, self.pos+9, 'q'])
+						pm.append([self.pos, self.pos+9, 'b'])
+						pm.append([self.pos, self.pos+9, 'n'])
+					else:
+						pm.append([self.pos, self.pos+9])
 				else:
 					pm.append([-1, self.pos+9])
 				# en-passent
@@ -43,7 +55,13 @@ class Pawn(Piece):
 			# capture left
 			if self.pos % 8 != 0:
 				if board[self.pos + 7] < 0:
-					pm.append([self.pos, self.pos+7])
+					if r(self.pos+7)==8:
+						pm.append([self.pos, self.pos+7, 'r'])
+						pm.append([self.pos, self.pos+7, 'q'])
+						pm.append([self.pos, self.pos+7, 'b'])
+						pm.append([self.pos, self.pos+7, 'n'])
+					else:
+						pm.append([self.pos, self.pos+7])
 				else:
 					pm.append([-1, self.pos+7])
 				if board[self.pos-1] == -1 and pkgd_info["Last move"][1] == self.pos-1 and pkgd_info["Last move"][0] - pkgd_info["Last move"][1] == 16:
@@ -54,23 +72,42 @@ class Pawn(Piece):
 				pm.append([self.pos, self.pos-16])
 			# normal one-move ahead
 			if board[self.pos-8]==0:
-				pm.append([self.pos, self.pos-8])
+				if r(self.pos-8)==1:
+					pm.append([self.pos, self.pos-8, 'r'])
+					pm.append([self.pos, self.pos-8, 'q'])
+					pm.append([self.pos, self.pos-8, 'b'])
+					pm.append([self.pos, self.pos-8, 'n'])
+				else:
+					pm.append([self.pos, self.pos-8])
 			# capture right
 			if self.pos % 8 != 0:
 				if board[self.pos - 9] > 0:
-					pm.append([self.pos, self.pos-9])
+					if r(self.pos-8)==1:
+						pm.append([self.pos, self.pos-9, 'r'])
+						pm.append([self.pos, self.pos-9, 'q'])
+						pm.append([self.pos, self.pos-9, 'b'])
+						pm.append([self.pos, self.pos-9, 'n'])
+					else:
+						pm.append([self.pos, self.pos-9])
 				else:
 					pm.append([-1, self.pos-9])
 				if board[self.pos-1] == 1 and pkgd_info["Last move"][1] == self.pos-1 and pkgd_info["Last move"][1] - pkgd_info["Last move"][0] == 16:
 					pm.append([self.pos, self.pos-9])
 			# capture left
-			if self.pos+1 % 8 != 0:
+			if (self.pos+1) % 8 != 0:
 				if board[self.pos - 7] > 0:
-					pm.append([self.pos, self.pos-7])
+					if r(self.pos-8)==1:
+						pm.append([self.pos, self.pos-7, 'r'])
+						pm.append([self.pos, self.pos-7, 'q'])
+						pm.append([self.pos, self.pos-7, 'b'])
+						pm.append([self.pos, self.pos-7, 'n'])
+					else:
+						pm.append([self.pos, self.pos-7])
 				else:
 					pm.append([-1, self.pos-7])
 				if -1<self.pos+1<64 and board[self.pos+1] == 1 and pkgd_info["Last move"][1] == self.pos+1 and pkgd_info["Last move"][1] - pkgd_info["Last move"][0] == 16:
 					pm.append([self.pos, self.pos-7])
+
 		return pm
 
 class King(Piece):
@@ -100,22 +137,13 @@ class Knight(Piece):
 
 class Bishop(Piece):
 	def possible_moves(self, board, pkgd_info):
-		diagonal_moves = diagonals_pm(board=board, index=self.pos, color=self.color)
-		flattened_moves = [move for sublist in diagonal_moves for move in sublist]
-		return [[self.pos, i] for i in flattened_moves if type(i) == int]
+		return [[self.pos, i] for i in diagonals_pm(board=board, index=self.pos, color=self.color)]
 
 class Rook(Piece):
 	def possible_moves(self, board, pkgd_info):
-		file_rank_moves = file_rank_pm(board=board, index=self.pos, color=self.color)
-		flattened_moves = [move for sublist in file_rank_moves for move in sublist]
-		return [[self.pos, i] for i in flattened_moves if type(i) == int]
+		return [[self.pos, i] for i in file_rank_pm(board=board, index=self.pos, color=self.color)]
 		
 class Queen(Piece):
 	def possible_moves(self, board, pkgd_info):
-		diagonal_moves = diagonals_pm(board=board, index=self.pos, color=self.color)
-		flattened_moves = [move for sublist in diagonal_moves for move in sublist]
-		file_rank_moves = file_rank_pm(board=board, index=self.pos, color=self.color)
-		flattened_moves2 = [move for sublist in file_rank_moves for move in sublist]
-
-		return [[self.pos, i] for i in flattened_moves + flattened_moves2]
+		return [[self.pos, i] for i in (file_rank_pm(board=board, index=self.pos, color=self.color) + diagonals_pm(board=board, index=self.pos, color=self.color))]
 		
