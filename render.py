@@ -1,6 +1,9 @@
 import pygame as pg
 from util import f,r
-screen = []
+
+WINDOW_SIZE = 468
+screen = pg.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
+board_img = pg.transform.scale(pg.image.load('assets\\used_assets\\' + "chessboard2.png").convert_alpha(), (468, 468))
 def init_render():
 	pg.init()
 
