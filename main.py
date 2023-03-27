@@ -12,6 +12,7 @@ import chess
 import chess.pgn
 from render import init_render, draw_everything
 import render
+from AI import EvolutionModel
 
 OUTPUT_GAME_RECORD_PATH = "games_played\\"
 
@@ -60,31 +61,34 @@ def main():
 		print(f"{e}: unexpected flag values")
 		return 0
 
+	 # The Board.
+	board = Board()
+	Legal_Moves_arr = board.LegalMoves()
 	if White == None:
 		White = "AI"
-		White_Bot = AI()
+		White_Bot = EvolutionModel(board)
 	if Black == None:
-		Black_Bot = AI()
-		Black == "AI"
+		Black_Bot = EvolutionModel(board)
+		Black = "AI"
 
-	board = Board() # The Board.
 	run = True # Continue running the game.
 	F = False # position in new_move array (T=1,F=0)
 	new_move = [-1,-1] # The next that will be played. 
 	p = True # Don't know what this variable does, afraid to del.
 	fifty_move_rule = 0 # Counts moves untill draw by 50 move rule
 	get_from_screen = True # Get the next move from screen (mouse)
+	count = 0
 	while run:
 		# Get white's move
 		if board.turn:
 			if White == "AI":
-				new_move =
+				new_move = White_Bot.make_move(legal_moves=Legal_Moves_arr)
 				get_from_screen = False
 			else:
 				get_from_screen = True
 		else:
 			if Black == "AI":
-				new_move = 
+				new_move = Black_Bot.make_move(legal_moves=Legal_Moves_arr)
 				get_from_screen = False
 			else:
 				get_from_screen = True
@@ -104,11 +108,12 @@ def main():
 		# Found move, will check if it is legal.
 		if -1 not in new_move:
 			# Checks if move is legal.
-			if new_move in board.LegalMoves():
+			if new_move in Legal_Moves_arr:
 				fifty_move_rule+=1
 				if abs(board.pia[new_move[0]]) == 1 or board.pia[new_move[1]] != 0:
 					fifty_move_rule = 0
 				board.update_board(move=new_move)
+				count=0
 				GAME_RECORD.append(uci_notation(new_move))
 				board.turn = not board.turn
 				board.last_move = new_move
@@ -150,7 +155,8 @@ def main():
 			draw_everything(board.pia)
 
 		# Check if game ended
-		if len(board.LegalMoves()) == 0:
+		Legal_Moves_arr = board.LegalMoves()
+		if len(Legal_Moves_arr) == 0:
 			if board.isCheck():
 				print("~~~~~~~~~~~~~~~~~")
 				print("    CHECKMATE    ")

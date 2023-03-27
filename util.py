@@ -17,6 +17,9 @@ def tmp_board(board, move):
 		a[move[1]+8] = 0
 	a[move[1]] = a[move[0]]
 	a[move[0]] = 0
+	'''if len(move) == 3:
+					i = move[1]
+					a[i] = {"q":9,"r":5,"n":3,"b":3.1}[move[2]] * ((i>10)-0.5)*2'''
 	return a
 
 def distance(a, b):

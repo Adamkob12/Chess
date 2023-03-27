@@ -28,7 +28,7 @@ class Pawn(Piece):
 			if 7 < self.pos < 16 and board[self.pos+8]==board[self.pos+16] and board[self.pos+8]==0:
 				pm.append([self.pos, self.pos+16])
 			# normal one-move ahead
-			if board[self.pos+8]==0:
+			if 0<=self.pos+8<64 and board[self.pos+8]==0:
 				if r(self.pos+8)==8:
 					pm.append([self.pos, self.pos+8, 'r'])
 					pm.append([self.pos, self.pos+8, 'q'])
@@ -38,7 +38,7 @@ class Pawn(Piece):
 					pm.append([self.pos, self.pos+8])
 			# capture right
 			if (self.pos+1) % 8 != 0:
-				if board[self.pos + 9] < 0:
+				if 0<=self.pos+9<64 and board[self.pos + 9] < 0:
 					if r(self.pos+9)==8:
 						pm.append([self.pos, self.pos+9, 'r'])
 						pm.append([self.pos, self.pos+9, 'q'])
@@ -54,7 +54,7 @@ class Pawn(Piece):
 
 			# capture left
 			if self.pos % 8 != 0:
-				if board[self.pos + 7] < 0:
+				if 0<=self.pos+7<64 and board[self.pos + 7] < 0:
 					if r(self.pos+7)==8:
 						pm.append([self.pos, self.pos+7, 'r'])
 						pm.append([self.pos, self.pos+7, 'q'])
@@ -71,7 +71,7 @@ class Pawn(Piece):
 			if 47 < self.pos < 56 and board[self.pos-8]==board[self.pos-16] and board[self.pos-8]==0:
 				pm.append([self.pos, self.pos-16])
 			# normal one-move ahead
-			if board[self.pos-8]==0:
+			if 0<=self.pos-8<64 and board[self.pos-8]==0:
 				if r(self.pos-8)==1:
 					pm.append([self.pos, self.pos-8, 'r'])
 					pm.append([self.pos, self.pos-8, 'q'])
@@ -81,7 +81,7 @@ class Pawn(Piece):
 					pm.append([self.pos, self.pos-8])
 			# capture right
 			if self.pos % 8 != 0:
-				if board[self.pos - 9] > 0:
+				if 0<=self.pos-9<64 and board[self.pos - 9] > 0:
 					if r(self.pos-8)==1:
 						pm.append([self.pos, self.pos-9, 'r'])
 						pm.append([self.pos, self.pos-9, 'q'])
@@ -95,7 +95,7 @@ class Pawn(Piece):
 					pm.append([self.pos, self.pos-9])
 			# capture left
 			if (self.pos+1) % 8 != 0:
-				if board[self.pos - 7] > 0:
+				if 0<=self.pos-7<64 and board[self.pos - 7] > 0:
 					if r(self.pos-8)==1:
 						pm.append([self.pos, self.pos-7, 'r'])
 						pm.append([self.pos, self.pos-7, 'q'])

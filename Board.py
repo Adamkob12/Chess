@@ -1,5 +1,6 @@
 from Pieces import *
 import numpy as np
+from copy import deepcopy
 
 class Board():
 	def __init__(self):
@@ -56,6 +57,7 @@ class Board():
 			,-1,-1,-1,-1,-1,-1,-1,-1
 			,-5,-3,-3.1,-9,-100,-3.1,-3,-5]
 
+		self.number_of_interpetations = 1
 		self.turn = True # T/F
 		self.last_move = [] # [pos_of_moved_piece, destination]
 		self.black_king_moved = False
@@ -114,7 +116,6 @@ class Board():
 									p.terminate()
 									self.white_pieces.remove(p)
 									self.pia[move[1]+8] = 0
-
 				if piece.name == "K":
 					if piece.color: 
 						self.white_king_pos = move[1]
@@ -169,7 +170,7 @@ class Board():
 		# We want to check if the white pieces are checking black
 		for w_piece in self.white_pieces:
 			for move in w_piece.possible_moves(board, pkgd_info={"Last move": last_move, "WKM": self.white_king_moved, "BKM": self.black_king_moved, "WKR": self.wkr_moved, "WQR": self.wqr_moved, "BKR": self.bkr_moved, "BQR": self.bqr_moved}):
-				if board[move[1]] == -100:
+				if 0<=move[1]<64 and board[move[1]] == -100:
 					White_Check = True
 					break
 			if White_Check:
@@ -177,7 +178,7 @@ class Board():
 		# checking if the black pieces are checking white
 		for b_piece in self.black_pieces:
 			for move in b_piece.possible_moves(board, pkgd_info={"Last move": last_move, "WKM": self.white_king_moved, "BKM": self.black_king_moved, "WKR": self.wkr_moved, "WQR": self.wqr_moved, "BKR": self.bkr_moved, "BQR": self.bqr_moved}):
-				if board[move[1]] == 100:
+				if 0<=move[1]<64 and board[move[1]] == 100:
 					if White_Check:
 						return 30
 					else:
@@ -185,3 +186,7 @@ class Board():
 		if White_Check:
 			return 1
 		return 0
+
+	def getControlledSquares(self):
+		pass
+
