@@ -81,13 +81,15 @@ class Board():
 	def update_board(self, move):
 		# Assuming move is legal.
 		for index, piece in enumerate(self.black_pieces+self.white_pieces):
+			if piece == None:
+				continue
 			# if the move is a capture
 			if piece.pos == move[1]:
 				piece.terminate()
 				if index < len(self.black_pieces):
-					self.black_pieces.remove(piece)
+					self.black_pieces[index] = None
 				else:
-					self.white_pieces.remove(piece)
+					self.white_pieces[index-32] = None
 
 			if piece.pos == move[0]:
 				if piece.name == "R":
@@ -108,13 +110,13 @@ class Board():
 							for index, p in enumerate(self.black_pieces):
 								if p.pos == move[1] - 8:
 									p.terminate()
-									self.black_pieces.remove(p)
+									self.black_pieces[index] = None
 									self.pia[move[1]-8] = 0
 						else:
 							for index, p in enumerate(self.white_pieces):
 								if p.pos == move[1] + 8:
 									p.terminate()
-									self.white_pieces.remove(p)
+									self.white_pieces[index] = None
 									self.pia[move[1]+8] = 0
 				if piece.name == "K":
 					if piece.color: 
@@ -141,9 +143,13 @@ class Board():
 		legal_moves = []
 		if self.turn:
 			for w_piece in self.white_pieces:
+				if w_piece == None:
+					continue
 				legal_moves += [move for move in w_piece.possible_moves(self.pia, pkgd_info={"Last move": self.last_move, "WKM": self.white_king_moved, "BKM": self.black_king_moved, "WKR": self.wkr_moved, "WQR": self.wqr_moved, "BKR": self.bkr_moved, "BQR": self.bqr_moved}) if move[0]!=-1 and self.isLegal(move)]
 		else:
 			for b_piece in self.black_pieces:
+				if b_piece == None:
+					continue
 				legal_moves += [move for move in b_piece.possible_moves(self.pia, pkgd_info={"Last move": self.last_move, "WKM": self.white_king_moved, "BKM": self.black_king_moved, "WKR": self.wkr_moved, "WQR": self.wqr_moved, "BKR": self.bkr_moved, "BQR": self.bqr_moved}) if move[0]!=-1 and self.isLegal(move)]
 		return legal_moves
 
@@ -169,6 +175,8 @@ class Board():
 
 		# We want to check if the white pieces are checking black
 		for w_piece in self.white_pieces:
+			if w_piece == None:
+				continue
 			for move in w_piece.possible_moves(board, pkgd_info={"Last move": last_move, "WKM": self.white_king_moved, "BKM": self.black_king_moved, "WKR": self.wkr_moved, "WQR": self.wqr_moved, "BKR": self.bkr_moved, "BQR": self.bqr_moved}):
 				if 0<=move[1]<64 and board[move[1]] == -100:
 					White_Check = True
@@ -177,6 +185,8 @@ class Board():
 				break
 		# checking if the black pieces are checking white
 		for b_piece in self.black_pieces:
+			if b_piece == None:
+				continue
 			for move in b_piece.possible_moves(board, pkgd_info={"Last move": last_move, "WKM": self.white_king_moved, "BKM": self.black_king_moved, "WKR": self.wkr_moved, "WQR": self.wqr_moved, "BKR": self.bkr_moved, "BQR": self.bqr_moved}):
 				if 0<=move[1]<64 and board[move[1]] == 100:
 					if White_Check:

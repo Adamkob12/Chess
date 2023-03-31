@@ -107,7 +107,6 @@ class Pawn(Piece):
 					pm.append([-1, self.pos-7])
 				if -1<self.pos+1<64 and board[self.pos+1] == 1 and pkgd_info["Last move"][1] == self.pos+1 and pkgd_info["Last move"][1] - pkgd_info["Last move"][0] == 16:
 					pm.append([self.pos, self.pos-7])
-
 		return pm
 
 class King(Piece):

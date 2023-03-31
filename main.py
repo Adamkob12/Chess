@@ -23,7 +23,10 @@ def main():
 	global RESULT
 	global RECORD
 	global RENDER
-
+	global White_Bot
+	global Black_Bot
+	global NODRAW
+ 
 	GAME_RECORD = []
 	RESULT = 0
 	parser = argparse.ArgumentParser(description='Flags for controlling the game')
@@ -33,6 +36,7 @@ def main():
 	parser.add_argument('--w', type=str, help='TYPE OF AI TO PLAY WHITE')
 	parser.add_argument('--b', type=str, help='TYPE OF AI TO PLAY BLACK')
 	parser.add_argument('--render', type=int, help='render board? (0,1)')
+	parser.add_argument('--nodraw', type=int, help='1- Dont record draw (tie) 0/Nothing- record draw')
 	args = parser.parse_args()
 	
 	if not (args.p in [1,2,3,4] and args.r in [0,1] and args.render in [0,1]):
@@ -51,11 +55,12 @@ def main():
 			Black = args.b
 		else:
 			Black = "User"
-		if args.render:
+		if bool(args.render):
 			init_render()
 			RENDER = True
 		else: 
 			RENDER = False
+		NODRAW = bool(args.nodraw)
 		RECORD = args.r
 	except Exception as e:
 		print(f"{e}: unexpected flag values")
@@ -131,17 +136,21 @@ def main():
 					if new_move[2] == 'b':
 						tmp_piece = Bishop(pos=i , color=(i>10) , name="B")
 					if i>10:
-						for piece_to_promote in board.white_pieces:
+						for index, piece_to_promote in enumerate(board.white_pieces):
+							if piece_to_promote == None:
+								continue
 							if piece_to_promote.pos == i:
 								piece_to_promote.terminate()
-								board.white_pieces.remove(piece_to_promote)
+								board.white_pieces[index] = None
 						board.white_pieces.append(tmp_piece)
 						board.pia[i] = {"q":9,"r":5,"n":3,"b":3.1}[new_move[2]]
 					else:
-						for piece_to_promote in board.black_pieces:
+						for index, piece_to_promote in enumerate(board.black_pieces):
+							if piece_to_promote == None:
+								continue
 							if piece_to_promote.pos == i:
 								piece_to_promote.terminate()
-								board.black_pieces.remove(piece_to_promote)
+								board.black_pieces[index] = None
 						board.black_pieces.append(tmp_piece)
 						board.pia[i] = {"q":9,"r":5,"n":3,"b":3.1}[new_move[2]] * -1
 
@@ -196,7 +205,14 @@ for i, MOVE in enumerate(GAME_RECORD):
 		continue
 	node = node.add_variation(chess.Move.from_uci(MOVE))
 
-if RECORD:
+if RECORD and not (NODRAW and RESULT=="0.5-0.5"):
 	f = open(OUTPUT_GAME_RECORD_PATH + "game_dataset1.pgn", "a")
-	f.write(str(game) + "\n\n")
+	#f.write(str(game) + "\n\n")
+	if White == "AI" and not RESULT=="0-1":
+		w_genome = White_Bot.getGenome()
+		f.write(str(w_genome["good_squares_to_leave"])+","+ str(w_genome["good_squares_to_go"])+","+str(w_genome["capture_weight"])+","+str(w_genome["check_weight"])+"\n")
+	if Black == "AI" and not RESULT=="1-0":
+		b_genome = Black_Bot.getGenome()
+		f.write(str(b_genome["good_squares_to_leave"])+","+ str(b_genome["good_squares_to_go"])+","+str(b_genome["capture_weight"])+","+str(b_genome["check_weight"])+"\n")
+	
 	f.close()

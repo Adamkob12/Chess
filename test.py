@@ -1,4 +1,4 @@
-class g():
+'''class g():
 	def __init__(self, x):
 		self.x = x
 	def change_x(self, y):
@@ -9,4 +9,5 @@ class a():
 G = g(1)
 A = a(G)
 G.change_x(2)
-print(A.gg.x)
+print(A.gg.x)'''
+print(bool(None))

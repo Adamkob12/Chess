@@ -3,6 +3,7 @@ import random
 import numpy as np
 from copy import deepcopy
 import math
+from util import tmp_board
 
 def sigmoid(x):
 	return 1 / (1 + math.exp(-x))
@@ -23,8 +24,12 @@ class EvolutionModel(AI):
 		of the board. The genome will be a vector of weights assigned to each matrix. We'll simulate a tournament
 		and implement the classic evolution algorithm (Parent1-49%, Parent2-49%, mutation-2%)
 		'''
-		self.good_squares_to_leave = np.random.rand(64)
-		self.good_squares_to_go = np.random.rand(64)
+		self.good_squares_to_leave = (np.random.randint(64, size=5))
+		self.good_squares_to_go = (np.random.randint(64, size=5))
+		self.check_weight = random.uniform(-1, 1)
+		self.capture_weight = random.uniform(-1, 1)
+		self.own_king_distance_from_edge = random.uniform(-1, 1)
+		self.enemy_king_distance_from_edge = random.uniform(-1, 1)
 
 	def weight_move(self, move):
 		pass
@@ -40,12 +45,27 @@ class EvolutionModel(AI):
 		return move_to_return
 
 	def evaluate_position(self, move):
-		return random.uniform(-0.1, 0.1)
+		eval_ = 0
+		if move[0] in self.good_squares_to_leave and move[0] not in self.good_squares_to_go:
+			eval_ += 0.5
+		else:
+			eval_ -= 0.1
+		if move[1] in self.good_squares_to_go and move[1] not in self.good_squares_to_leave:
+			eval_ += 0.5
+		else:
+			eval_ -= 0.1
+		if self.Board.pia[move[1]]!=0:
+			eval_+=self.capture_weight
+		if self.Board.isCheck(board=tmp_board(self.Board.pia, move),last_move=move):
+			eval_+=self.check_weight
+		return eval_ + random.uniform(-0.1, 0.1)
 
 	def getGenome(self):
 		genome = {
 			"good_squares_to_leave": self.good_squares_to_leave,
-			"good_squares_to_go": self.good_squares_to_go
+			"good_squares_to_go": self.good_squares_to_go,
+			"capture_weight": self.capture_weight,
+			"check_weight": self.check_weight
 		}
 		return genome
 
